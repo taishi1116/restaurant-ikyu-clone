@@ -29,5 +29,9 @@ npm run dev
 
 ## lint and formatter
 
-ルートパッケージに[biomejs](https://biomejs.dev/ja/)を利用して共通設定しています
+ルートパッケージに[biomejs](https://biomejs.dev/ja/)を利用して共通設定しています  
 よって個々のpackagesで追加設定は不要です
+
+## デプロイ
+
+{ TBD }
