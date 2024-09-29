@@ -15,7 +15,8 @@
     "packages/backend"
   ],
   "devDependencies": {
-    "@biomejs/biome": "1.9.2"
+    "@biomejs/biome": "1.9.2",
+    "lefthook": "^1.7.17"
   },
   "volta": {
     "node": "20.17.0",
