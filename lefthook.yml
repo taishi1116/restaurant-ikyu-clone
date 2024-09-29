@@ -1,6 +1,6 @@
 pre-commit:
   commands:
     check:
-      glob: "*.{js,ts,tsx}"
+      glob: "*.{js,ts,tsx,json}"
       run: npm run check
       stage_fixed: true

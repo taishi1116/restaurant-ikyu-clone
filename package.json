@@ -1,25 +1,22 @@
 {
-  "name": "restaurant-ikyu-clone",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "check": "biome check --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "workspaces": [
-    "packages/web",
-    "packages/backend"
-  ],
-  "devDependencies": {
-    "@biomejs/biome": "1.9.2",
-    "lefthook": "^1.7.17"
-  },
-  "volta": {
-    "node": "20.17.0",
-    "npm": "10.8.3"
-  }
+	"name": "restaurant-ikyu-clone",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"check": "biome check --fix",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"workspaces": ["packages/web", "packages/backend"],
+	"devDependencies": {
+		"@biomejs/biome": "1.9.2",
+		"lefthook": "^1.7.17"
+	},
+	"volta": {
+		"node": "20.17.0",
+		"npm": "10.8.3"
+	}
 }
