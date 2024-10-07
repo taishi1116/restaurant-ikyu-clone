@@ -32,6 +32,11 @@ npm run dev
 ルートパッケージに[biomejs](https://biomejs.dev/ja/)を利用して共通設定しています  
 よって個々のpackagesで追加設定は不要です
 
+## テスト
+
+ルートパッケージにjestをインストールして共通設定しています。
+よって個々のpackagesで追加設定は不要です
+
 ## デプロイ
 
 { TBD }

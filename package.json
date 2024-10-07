@@ -5,14 +5,17 @@
 	"main": "index.js",
 	"scripts": {
 		"check": "biome check --fix",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "jest"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
-	"workspaces": ["packages/web", "packages/backend"],
+	"workspaces": ["packages/web", "packages/coreApi"],
 	"devDependencies": {
 		"@biomejs/biome": "1.9.2",
+		"@types/jest": "^29.5.13",
+		"jest": "^29.7.0",
+		"ts-jest": "^29.2.5",
 		"lefthook": "^1.7.17"
 	},
 	"volta": {
