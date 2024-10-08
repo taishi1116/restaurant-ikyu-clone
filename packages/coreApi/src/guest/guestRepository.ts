@@ -1,12 +1,12 @@
 import type { CreatedGuest, GuestId } from "@src/guest/guest";
+import { type ResultAsync, ok, okAsync } from "neverthrow";
 
-/**
- * 関数ベースでdb処理を定義する
- */
 export const getGuestById = async (guestId: GuestId) => {
 	return {};
 };
 
-export const saveGuest = async (guest: CreatedGuest) => {
-	return {};
+type SaveGuest = (guest: CreatedGuest) => ResultAsync<CreatedGuest, Error>;
+
+export const saveGuest: SaveGuest = async (guest) => {
+	return okAsync(guest);
 };

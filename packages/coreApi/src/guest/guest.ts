@@ -1,24 +1,32 @@
 import type { NewType } from "@src/types/newType";
 import { generateId } from "@src/utils/generateId";
+import { type Result, ok } from "neverthrow";
 
-type Men = "men";
+const generateGuestId = () => toGuestId(generateId());
+
+export const GENDER = {
+	MEN: "men",
+	WOMEN: "women",
+} as const;
+
+export type Men = "men";
 type Women = "women";
+export type Gender = (typeof GENDER)[keyof typeof GENDER];
 
 export type GuestId = NewType<"GuestId", string>;
 type GuestName = NewType<"GuestName", string>;
 type GuestEmail = NewType<"GuestEmail", string>;
-type Gender = NewType<"GuestGender", Men | Women>;
+type GuestGender = NewType<"GuestGender", Gender>;
 type GuestBirthYear = NewType<"GuestBirthYear", number>;
 type GuestBirthMonth = NewType<"GuestBirthMonth", number>;
 type GuestBirthDay = NewType<"GuestBirthDay", number>;
 type PostCode = NewType<"PostCode", number>;
-// type PaymentId = NewType<"PaymentId", string>;
 
 // 未検証のゲスト情報
 export type UnValidateGuest = {
 	name: string;
 	email: string;
-	gender: Men | Women;
+	gender: Gender;
 	birthYear: number;
 	birthMonth: number;
 	birthDay: number;
@@ -29,7 +37,7 @@ export type UnValidateGuest = {
 export type ValidatedGuest = {
 	name: GuestName;
 	email: GuestEmail;
-	gender: Gender;
+	gender: GuestGender;
 	birthYear: GuestBirthYear;
 	birthMonth: GuestBirthMonth;
 	birthDay: GuestBirthDay;
@@ -44,25 +52,26 @@ export type CreatedGuest = {
 	id: GuestId;
 	name: GuestName;
 	email: GuestEmail;
-	gender: Gender;
+	gender: GuestGender;
 	birthYear: GuestBirthYear;
 	birthMonth: GuestBirthMonth;
 	birthDay: GuestBirthDay;
 	postCode: PostCode;
 };
 
-type Guest = UnValidateGuest | CreatedGuest | ValidatedGuest;
-
+//  todo idがulidか?メアドがメアド形式か?誕生日の年の桁数が正しいか?などのバリデーションがあるはず
 const toGuestId = (id: string): GuestId => id as GuestId;
 const toGuestName = (name: string): GuestName => name as GuestName;
 const toGuestEmail = (email: string): GuestEmail => email as GuestEmail;
-const toGender = (gender: Men | Women): Gender => gender as Gender;
+const toGender = (gender: Men | Women): GuestGender => gender as GuestGender;
 const toGuestBirthYear = (year: number): GuestBirthYear => year as GuestBirthYear;
 const toGuestBirthMonth = (month: number): GuestBirthMonth => month as GuestBirthMonth;
 const toGuestBirthDay = (day: number): GuestBirthDay => day as GuestBirthDay;
 const toGuestPostCode = (code: number): PostCode => code as PostCode;
 
-export const validateGuest = (guest: UnValidateGuest): ValidatedGuest => {
+type ValidateGuest = (guest: UnValidateGuest) => ValidatedGuest;
+
+export const validateGuest: ValidateGuest = (guest) => {
 	return {
 		name: toGuestName(guest.name),
 		email: toGuestEmail(guest.email),
@@ -74,14 +83,16 @@ export const validateGuest = (guest: UnValidateGuest): ValidatedGuest => {
 	};
 };
 
-export const createGuest = (guest: ValidatedGuest): CreatedGuest => {
+type CreateGuest = (guest: ValidatedGuest) => CreatedGuest;
+
+export const createGuest: CreateGuest = (guest) => {
 	return {
 		...guest,
-		id: toGuestId(generateId()),
+		id: generateGuestId(),
 	};
 };
 
-export const changeGuestName =
+export const updateGuestName =
 	(guest: CreatedGuest) =>
 	(name: GuestName): CreatedGuest => {
 		return {
@@ -90,7 +101,7 @@ export const changeGuestName =
 		};
 	};
 
-export const changeGuestEmail =
+export const updateGuestEmail =
 	(guest: CreatedGuest) =>
 	(email: GuestEmail): CreatedGuest => {
 		return {
@@ -101,7 +112,7 @@ export const changeGuestEmail =
 
 export const updateGuestGender =
 	(guest: CreatedGuest) =>
-	(gender: Gender): CreatedGuest => {
+	(gender: GuestGender): CreatedGuest => {
 		return {
 			...guest,
 			gender,
