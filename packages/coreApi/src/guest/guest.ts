@@ -4,7 +4,7 @@ import { generateId } from "@src/utils/generateId";
 type Men = "men";
 type Women = "women";
 
-type GuestId = NewType<"GuestId", string>;
+export type GuestId = NewType<"GuestId", string>;
 type GuestName = NewType<"GuestName", string>;
 type GuestEmail = NewType<"GuestEmail", string>;
 type Gender = NewType<"GuestGender", Men | Women>;
@@ -14,7 +14,8 @@ type GuestBirthDay = NewType<"GuestBirthDay", number>;
 type PostCode = NewType<"PostCode", number>;
 // type PaymentId = NewType<"PaymentId", string>;
 
-type UnValidateGuest = {
+// 未検証のゲスト情報
+export type UnValidateGuest = {
 	name: string;
 	email: string;
 	gender: Men | Women;
@@ -24,7 +25,8 @@ type UnValidateGuest = {
 	postCode: number;
 };
 
-type ValidatedGuest = {
+// 検証されたゲスト情報(ただしdbに登録されているかは不明)
+export type ValidatedGuest = {
 	name: GuestName;
 	email: GuestEmail;
 	gender: Gender;
@@ -34,8 +36,11 @@ type ValidatedGuest = {
 	postCode: PostCode;
 };
 
-//  note おそらく作成済みゲストと決済未設定ゲストは違うはず
-type CreatedGuest = {
+/**
+ * 作成済みゲスト情報
+ * note おそらく作成済みゲストと決済未設定ゲストは違うはず
+ */
+export type CreatedGuest = {
 	id: GuestId;
 	name: GuestName;
 	email: GuestEmail;
@@ -69,7 +74,7 @@ export const validateGuest = (guest: UnValidateGuest): ValidatedGuest => {
 	};
 };
 
-export const createGuest = (guest: Omit<ValidatedGuest, "id">): CreatedGuest => {
+export const createGuest = (guest: ValidatedGuest): CreatedGuest => {
 	return {
 		...guest,
 		id: toGuestId(generateId()),
