@@ -60,7 +60,7 @@ export type CreatedGuest = {
 };
 
 //  todo idがulidか?メアドがメアド形式か?誕生日の年の桁数が正しいか?などのバリデーションがあるはず
-const toGuestId = (id: string): GuestId => id as GuestId;
+export const toGuestId = (id: string): GuestId => id as GuestId;
 const toGuestName = (name: string): GuestName => name as GuestName;
 const toGuestEmail = (email: string): GuestEmail => email as GuestEmail;
 const toGender = (gender: Men | Women): GuestGender => gender as GuestGender;
@@ -69,9 +69,23 @@ const toGuestBirthMonth = (month: number): GuestBirthMonth => month as GuestBirt
 const toGuestBirthDay = (day: number): GuestBirthDay => day as GuestBirthDay;
 const toGuestPostCode = (code: number): PostCode => code as PostCode;
 
+type ToUnValidateGuest = (guest: ValidatedGuest) => UnValidateGuest;
+
+export const toUnValidateGuest: ToUnValidateGuest = (guest) => {
+	return {
+		name: guest.name,
+		email: guest.email,
+		gender: guest.gender,
+		birthYear: guest.birthYear,
+		birthMonth: guest.birthMonth,
+		birthDay: guest.birthDay,
+		postCode: guest.postCode,
+	};
+};
+
 type ValidateGuest = (guest: UnValidateGuest) => ValidatedGuest;
 
-export const validateGuest: ValidateGuest = (guest) => {
+export const toValidateGuest: ValidateGuest = (guest) => {
 	return {
 		name: toGuestName(guest.name),
 		email: toGuestEmail(guest.email),
@@ -92,65 +106,51 @@ export const createGuest: CreateGuest = (guest) => {
 	};
 };
 
-export const updateGuestName =
-	(guest: CreatedGuest) =>
-	(name: GuestName): CreatedGuest => {
-		return {
-			...guest,
-			name,
-		};
+export const updateGuestName = (guest: CreatedGuest, name: GuestName): CreatedGuest => {
+	return {
+		...guest,
+		name,
 	};
+};
 
-export const updateGuestEmail =
-	(guest: CreatedGuest) =>
-	(email: GuestEmail): CreatedGuest => {
-		return {
-			...guest,
-			email,
-		};
+export const updateGuestEmail = (guest: CreatedGuest, email: GuestEmail): CreatedGuest => {
+	return {
+		...guest,
+		email,
 	};
+};
 
-export const updateGuestGender =
-	(guest: CreatedGuest) =>
-	(gender: GuestGender): CreatedGuest => {
-		return {
-			...guest,
-			gender,
-		};
+export const updateGuestGender = (guest: CreatedGuest, gender: GuestGender): CreatedGuest => {
+	return {
+		...guest,
+		gender,
 	};
+};
 
-export const updateGuestBirthYear =
-	(guest: CreatedGuest) =>
-	(birthYear: GuestBirthYear): CreatedGuest => {
-		return {
-			...guest,
-			birthYear,
-		};
+export const updateGuestBirthYear = (guest: CreatedGuest, birthYear: GuestBirthYear): CreatedGuest => {
+	return {
+		...guest,
+		birthYear,
 	};
+};
 
-export const updateGuestBirthMonth =
-	(guest: CreatedGuest) =>
-	(birthMonth: GuestBirthMonth): CreatedGuest => {
-		return {
-			...guest,
-			birthMonth,
-		};
+export const updateGuestBirthMonth = (guest: CreatedGuest, birthMonth: GuestBirthMonth): CreatedGuest => {
+	return {
+		...guest,
+		birthMonth,
 	};
+};
 
-export const updateGuestBirthDay =
-	(guest: CreatedGuest) =>
-	(birthDay: GuestBirthDay): CreatedGuest => {
-		return {
-			...guest,
-			birthDay,
-		};
+export const updateGuestBirthDay = (guest: CreatedGuest, birthDay: GuestBirthDay): CreatedGuest => {
+	return {
+		...guest,
+		birthDay,
 	};
+};
 
-export const updatePostCode =
-	(guest: CreatedGuest) =>
-	(postCode: PostCode): CreatedGuest => {
-		return {
-			...guest,
-			postCode,
-		};
+export const updateGuestPostCode = (guest: CreatedGuest, postCode: PostCode): CreatedGuest => {
+	return {
+		...guest,
+		postCode,
 	};
+};
