@@ -9,7 +9,6 @@
 		"@prisma/client": "^5.20.0",
 		"hono": "^4.6.3",
 		"neverthrow": "^8.0.0",
-		"ulid": "^2.3.0",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
