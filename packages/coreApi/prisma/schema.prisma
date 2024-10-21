@@ -14,7 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//  todo 外部認証サービスを利用するのでauthIdみたいなカラムが必要か?
 // todo 決済サービスはstripeを利用するのでstripeIdみたいなカラムが必要か?
 
 enum Gender {
@@ -29,9 +28,10 @@ enum EmployeeRole {
 
 // 管理者 一休レストランの管理者
 model Admins {
-  id    String @id @db.Uuid
-  name  String
-  email String @unique
+  id     String @id @db.Uuid
+  authId String @unique @map("auth_id") // 認証サービスで払い出されたアカウントID
+  name   String
+  email  String @unique
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -42,6 +42,7 @@ model Admins {
 // 従業員 レストランの運営側 店長,スタッフという権限が存在する
 model Employees {
   id            String       @id @db.Uuid
+  authId        String       @unique @map("auth_id") // 認証サービスで払い出されたアカウントID
   restaurantsId String       @map("restaurants_id") @db.Uuid
   name          String
   email         String       @unique
