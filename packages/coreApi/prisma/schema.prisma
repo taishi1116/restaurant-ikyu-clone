@@ -10,21 +10,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//  todo 外部認証サービスを利用するのでauthIdみたいなカラムが必要か?
+// todo mysqlの複数単語はスネークケース推奨なのでテーブル上ではスネーク毛ケースで表記したい
+
 enum Gender {
   MEN
   WOMEN
 }
 
-model guests {
-  id         String @id @db.Uuid
-  name       String
-  email      String @unique
-  gender     Gender
-  birthYear  Int
-  birthMonth Int
-  birthDay   Int
-  postCode   Int
+enum EmployeeRole {
+  MANAGER // 店長
+  STAFF // スタッフ
+}
+
+// 管理者 一休レストランの管理者
+model Admins {
+  id        String  @id @db.Uuid
+  name      String
+  email     String  @unique
+  isDeleted Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// 従業員 レストランの運営側 店長,スタッフという権限が存在する
+model Employees {
+  id            String       @id @db.Uuid
+  restaurantsId String       @db.Uuid
+  name          String
+  email         String       @unique
+  role          EmployeeRole
+  isDeleted     Boolean      @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurant Restaurants @relation(fields: [restaurantsId], references: [id])
+}
+
+// レストラン
+model Restaurants {
+  id          String @id @db.Uuid
+  name        String
+  phoneNumber String
+  address     String
+  closedDay   String // レストラン側にテキスト形式で入力してもらう仕様っぽいのでString
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // paymentMethod RestaurantsPaymentMethods @relation(fields: [restaurantsPaymentMethodsId], references: [id])
+
+  restaurantsPaymentMethodsId String @db.Uuid
+
+  Employees Employees[]
+}
+
+// レストランの支払い方法
+model RestaurantsPaymentMethods {
+  id                String @id @db.Uuid
+  serviceChargeRate Float // サービス料金(%)
+  coverCharge       Int // チャージ料金(金額)
+  paymentMethod     String // 会計方法
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // Restaurants Restaurants[]
+}
+
+model plans {
+  id        String   @id @db.Uuid
+  name      String
+  // todo 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ゲスト レストランの利用者
+// model guests {
+//   id         String  @id @db.Uuid
+//   name       String
+//   email      String  @unique
+//   gender     Gender
+//   birthYear  Int
+//   birthMonth Int
+//   birthDay   Int
+//   postCode   Int
+//   isDeleted  Boolean @default(false)
+//
+//   createdAt DateTime @default(now())
+//   updatedAt DateTime @updatedAt
+// }
