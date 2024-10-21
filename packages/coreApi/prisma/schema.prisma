@@ -5,13 +5,17 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 //  todo 外部認証サービスを利用するのでauthIdみたいなカラムが必要か?
-// todo mysqlの複数単語はスネークケース推奨なのでテーブル上ではスネーク毛ケースで表記したい
+// todo 決済サービスはstripeを利用するのでstripeIdみたいなカラムが必要か?
 
 enum Gender {
   MEN
@@ -25,61 +29,90 @@ enum EmployeeRole {
 
 // 管理者 一休レストランの管理者
 model Admins {
-  id        String  @id @db.Uuid
-  name      String
-  email     String  @unique
-  isDeleted Boolean @default(false)
+  id    String @id @db.Uuid
+  name  String
+  email String @unique
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admins")
 }
 
 // 従業員 レストランの運営側 店長,スタッフという権限が存在する
 model Employees {
   id            String       @id @db.Uuid
-  restaurantsId String       @db.Uuid
+  restaurantsId String       @map("restaurants_id") @db.Uuid
   name          String
   email         String       @unique
   role          EmployeeRole
-  isDeleted     Boolean      @default(false)
+  isDeleted     Boolean      @default(false) @map("is_deleted")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   restaurant Restaurants @relation(fields: [restaurantsId], references: [id])
+
+  @@map("employees")
 }
 
 // レストラン
 model Restaurants {
   id          String @id @db.Uuid
+  paymentId   String @unique @map("payment_id") @db.Uuid
   name        String
-  phoneNumber String
+  phoneNumber String @map("phone_number")
   address     String
-  closedDay   String // レストラン側にテキスト形式で入力してもらう仕様っぽいのでString
+  closedDay   String @map("closed_day") // レストラン側にテキスト形式で入力してもらう仕様っぽいのでString
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  // paymentMethod RestaurantsPaymentMethods @relation(fields: [restaurantsPaymentMethodsId], references: [id])
+  employees Employees[]
+  Payments  Payments?
 
-  restaurantsPaymentMethodsId String @db.Uuid
-
-  Employees Employees[]
+  @@map("restaurants")
 }
 
-// レストランの支払い方法
-model RestaurantsPaymentMethods {
+// レストランの支払い情報
+model Payments {
   id                String @id @db.Uuid
-  serviceChargeRate Float // サービス料金(%)
-  coverCharge       Int // チャージ料金(金額)
-  paymentMethod     String // 会計方法
+  restaurantsId     String @unique @db.Uuid
+  serviceChargeRate Float  @map("service_charge_rate") // サービス料金(%)
+  coverCharge       Int    @map("cover_charge") // チャージ料金(金額)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  // Restaurants Restaurants[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  restaurants Restaurants             @relation(fields: [restaurantsId], references: [id])
+  methods     PaymentPaymentMethods[]
+
+  @@map("payments")
 }
 
-model plans {
+model PaymentPaymentMethods {
+  id             String @id @db.Uuid
+  paymentId      String @map("payment_id") @db.Uuid
+  methodMasterId String @map("method_master_id") @db.Uuid
+
+  payment Payments             @relation(fields: [paymentId], references: [id])
+  method  PaymentMethodsMaster @relation(fields: [methodMasterId], references: [id])
+
+  @@map("payments_payment_methods")
+}
+
+// レストランの会計方法マスタ
+// 一休では「テーブル or レジ」 しか存在しなかったが複数選択可 and 今後の拡張性を考慮してマスタ化
+model PaymentMethodsMaster {
+  id   String @id @db.Uuid
+  name String
+
+  paymentPaymentMethodsMaster PaymentPaymentMethods[]
+
+  @@map("payment_methods_master")
+}
+
+model Plans {
   id        String   @id @db.Uuid
   name      String
   // todo 
