@@ -28,7 +28,6 @@ enum EmployeeRole {
   STAFF // スタッフ
 }
 
-// 管理者 一休レストランの管理者
 model Admins {
   id     String @id @db.Uuid
   authId String @unique @map("auth_id")
@@ -66,8 +65,8 @@ model Restaurants {
   name           String
   phoneNumber    String  @map("phone_number")
   address        String
-  nearestStation String? @map("nearest_station") // 最寄駅
-  access         String // アクセス
+  nearestStation String? @map("nearest_station")
+  access         String
   closedDay      String  @map("closed_day") // レストラン側にテキスト形式で入力してもらう仕様っぽいのでString
 
   // 店舗紹介関連のカラム
@@ -89,14 +88,14 @@ model Restaurants {
 model RestaurantImages {
   id           String @id @db.Uuid
   restaurantId String @map("restaurant_id") @db.Uuid
-  bytes        Bytes  @map("image_byte") // 本来ならs3などを利用したいがお金が発生するのでバイナリでの保存
+  image        Bytes  @map("image_byte")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   restaurant Restaurants @relation(fields: [restaurantId], references: [id])
 
-  @@map("restaurant_images")
+  @@map("restaurants_images")
 }
 
 model RestaurantFeatures {
@@ -104,17 +103,16 @@ model RestaurantFeatures {
   restaurantId String @map("restaurant_id") @db.Uuid
   title        String @db.Char(35)
   description  String @db.Char(200)
-  image        Bytes? // 本来ならs3などを利用したいがお金が発生するのでバイナリでの保存
+  image        Bytes
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   restaurant Restaurants @relation(fields: [restaurantId], references: [id])
 
-  @@map("restaurant_features")
+  @@map("restaurants_features")
 }
 
-// レストランの支払い情報
 model Payments {
   id                String @id @db.Uuid
   restaurantsId     String @unique @db.Uuid
@@ -156,14 +154,15 @@ model PaymentsPaymentMethodsMaster {
 model Plans {
   id           String       @id @db.Uuid
   restaurantId String       @map("restaurant_id") @db.Uuid
+  isPublished  Boolean      @default(false) @map("is_published")
   name         String
+  image        Bytes
   timeZone     PlanTimeZone @map("time_zone")
-  description  String // 説明文
-  // todo メニューは画像と文章の組み合わせだったのでそこをどうするか検討
-  menu         String // メニュー内容
-  price        Int
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  menu         String
+  description  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   restaurant Restaurants? @relation(fields: [restaurantId], references: [id])
   cources    Cource[]
@@ -172,17 +171,31 @@ model Plans {
 }
 
 model Cource {
-  id     String @id @db.Uuid
-  planId String @map("plan_id") @db.Uuid
+  id          String  @id @db.Uuid
+  planId      String  @map("plan_id") @db.Uuid
+  isPublished Boolean @default(false) @map("is_published")
+  price       Int
 
-  Plans Plans? @relation(fields: [planId], references: [id])
+  Plans Plans?       @relation(fields: [planId], references: [id])
+  dates CourceDate[]
 
   @@map("cources")
 }
 
-// ゲスト レストランの利用者
-model guests {
+model CourceDate {
+  id       String   @id @db.Uuid
+  courceId String   @map("cource_id") @db.Uuid
+  date     DateTime @db.Date
+  time     DateTime @db.Time
+
+  Cource Cource @relation(fields: [courceId], references: [id])
+
+  @@map("cources_dates")
+}
+
+model Guests {
   id         String  @id @db.Uuid
+  authId     String  @unique @map("auth_id")
   name       String
   email      String  @unique
   gender     Gender
