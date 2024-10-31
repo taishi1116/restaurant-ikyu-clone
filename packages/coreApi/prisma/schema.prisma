@@ -62,7 +62,7 @@ model Restaurant {
   id                  String  @id @db.Uuid
   paymentId           String  @unique @map("payment_id") @db.Uuid
   stripeId            String  @unique @map("stripe_id")
-  name                String
+  name                String  @unique
   phoneNumber         String  @map("phone_number")
   address             String
   building            String?
@@ -134,6 +134,7 @@ model RestaurantsPaymentMethods {
   method     PaymentMethodsMaster @relation(fields: [paymentMethodMasterId], references: [id])
 
   @@id([restaurantId, paymentMethodMasterId])
+  @@index([restaurantId])
   @@map("restaurants_payment_methods")
 }
 
@@ -153,6 +154,7 @@ model Plan {
   restaurant Restaurant? @relation(fields: [restaurantId], references: [id])
   cources    Cource[]
 
+  @@index([restaurantId])
   @@map("plans")
 }
 
@@ -168,6 +170,7 @@ model Cource {
   plan  Plan?        @relation(fields: [planId], references: [id])
   dates CourceDate[]
 
+  @@index([planId])
   @@map("cources")
 }
 
@@ -179,6 +182,7 @@ model CourceDate {
 
   Cource Cource @relation(fields: [courceId], references: [id])
 
+  @@index([courceId])
   @@map("cources_dates")
 }
 
