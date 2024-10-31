@@ -1,0 +1,205 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PlanTimeZone {
+  DINNER
+  LUNCH
+}
+
+enum Gender {
+  MEN
+  WOMEN
+}
+
+enum EmployeeRole {
+  MANAGER
+  STAFF
+}
+
+model Admin {
+  id     String @id @db.Uuid
+  authId String @unique @map("auth_id")
+  name   String
+  email  String @unique
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("admins")
+}
+
+// 従業員 レストランの運営側 店長,スタッフという権限が存在する
+model Employee {
+  id           String       @id @db.Uuid
+  authId       String       @unique @map("auth_id")
+  restaurantId String       @map("restaurant_id") @db.Uuid
+  name         String
+  email        String       @unique
+  role         EmployeeRole
+  isDeleted    Boolean      @default(false) @map("is_deleted")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@map("employees")
+}
+
+model Restaurant {
+  id                  String  @id @db.Uuid
+  paymentId           String  @unique @map("payment_id") @db.Uuid
+  stripeId            String  @unique @map("stripe_id")
+  name                String  @unique
+  phoneNumber         String  @map("phone_number")
+  address             String
+  building            String?
+  nearestStation      String? @map("nearest_station")
+  access              String
+  closedDay           String  @map("closed_day")
+  serviceChargeRate   Float   @map("service_charge_rate") // サービス料金(%)
+  coverCharge         Int     @map("cover_charge") // チャージ料金(金額)
+  // 店舗紹介関連のカラム
+  introductionTitle   String  @map("introduction_title") @db.Char(35) // 長すぎると良くないので35文字制限
+  introductionContent String  @map("introduction_content") @db.Char(200)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  employees                 Employee[]
+  plans                     Plan[]
+  images                    RestaurantImage[]
+  features                  RestaurantFeatures[]
+  restaurantsPaymentMethods RestaurantsPaymentMethods[]
+
+  @@map("restaurants")
+}
+
+model RestaurantImage {
+  id           String @id @db.Uuid
+  restaurantId String @map("restaurant_id") @db.Uuid
+  image        Bytes
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@map("restaurants_images")
+}
+
+model RestaurantFeatures {
+  id           String @id @db.Uuid
+  restaurantId String @map("restaurant_id") @db.Uuid
+  title        String @db.Char(35)
+  description  String @db.Char(200)
+  image        Bytes
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@map("restaurants_features")
+}
+
+// レストランの会計方法マスタ
+// 一休では「テーブル or レジ」 しか存在しなかったが複数選択可 and 今後の拡張性を考慮してマスタ化
+model PaymentMethodsMaster {
+  id   String @id @db.Uuid
+  name String
+
+  restaurantsPaymentMethods RestaurantsPaymentMethods[]
+
+  @@map("payment_methods_master")
+}
+
+model RestaurantsPaymentMethods {
+  restaurantId          String @map("restaurant_id") @db.Uuid
+  paymentMethodMasterId String @map("payment_method_master_id") @db.Uuid
+
+  restaurant Restaurant           @relation(fields: [restaurantId], references: [id])
+  method     PaymentMethodsMaster @relation(fields: [paymentMethodMasterId], references: [id])
+
+  @@id([restaurantId, paymentMethodMasterId])
+  @@index([restaurantId])
+  @@map("restaurants_payment_methods")
+}
+
+model Plan {
+  id           String       @id @db.Uuid
+  restaurantId String       @map("restaurant_id") @db.Uuid
+  isPublished  Boolean      @default(false) @map("is_published")
+  name         String
+  image        Bytes
+  timeZone     PlanTimeZone @map("time_zone")
+  menu         String
+  description  String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  restaurant Restaurant? @relation(fields: [restaurantId], references: [id])
+  cources    Cource[]
+
+  @@index([restaurantId])
+  @@map("plans")
+}
+
+model Cource {
+  id          String  @id @db.Uuid
+  planId      String  @map("plan_id") @db.Uuid
+  isPublished Boolean @default(false) @map("is_published")
+  price       Int
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  plan  Plan?        @relation(fields: [planId], references: [id])
+  dates CourceDate[]
+
+  @@index([planId])
+  @@map("cources")
+}
+
+model CourceDate {
+  id       String   @id @db.Uuid
+  courceId String   @map("cource_id") @db.Uuid
+  date     DateTime @db.Date
+  time     DateTime @db.Time
+
+  Cource Cource @relation(fields: [courceId], references: [id])
+
+  @@index([courceId])
+  @@map("cources_dates")
+}
+
+model Guest {
+  id         String  @id @db.Uuid
+  authId     String  @unique @map("auth_id")
+  name       String
+  email      String  @unique
+  gender     Gender
+  birthYear  Int     @map("birth_year")
+  birthMonth Int     @map("birth_month")
+  birthDay   Int     @map("birth_day")
+  postCode   Int     @map("post_code")
+  isDeleted  Boolean @default(false) @map("is_deleted")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("guests")
+}

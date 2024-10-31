@@ -6,14 +6,16 @@
 	"dependencies": {
 		"@hono/node-server": "^1.13.1",
 		"@hono/zod-validator": "^0.4.1",
+		"@prisma/client": "^5.20.0",
 		"hono": "^4.6.3",
 		"neverthrow": "^8.0.0",
-		"ulid": "^2.3.0",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
+		"@mermaid-js/mermaid-cli": "^11.2.1",
 		"@types/node": "^20.11.17",
 		"prisma": "^5.20.0",
+		"prisma-erd-generator": "^1.11.2",
 		"tsx": "^4.7.1"
 	}
 }

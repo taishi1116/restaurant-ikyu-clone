@@ -1,6 +1,5 @@
 import type { NewType } from "@src/types/newType";
 import { generateId } from "@src/utils/generateId";
-import { type Result, ok } from "neverthrow";
 
 const generateGuestId = () => toGuestId(generateId());
 
