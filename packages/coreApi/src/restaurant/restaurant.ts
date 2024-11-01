@@ -17,7 +17,7 @@ const serviceChargeRate = z
 	.describe("サービス料金(%)なので0以上100以下");
 const coverCharge = z.number().nonnegative().brand("CoverCharge");
 const introductionTitle = z.string().max(35).brand("IntroductionTitle");
-const introductionDetail = z.string().max(200).brand("IntroductionDetail");
+const introductionContent = z.string().max(200).brand("IntroductionDetail");
 
 const restaurant = z
 	.object({
@@ -32,7 +32,7 @@ const restaurant = z
 		serviceChargeRate: serviceChargeRate,
 		coverCharge: coverCharge,
 		introductionTitle: introductionTitle,
-		introductionDetail: introductionDetail,
+		introductionContent: introductionContent,
 	})
 	.strict();
 
@@ -52,9 +52,9 @@ export const toClosedDay = (input: string): ClosedDay => closedDay.parse(input);
 export const toServiceChargeRate = (input: number): ServiceChargeRate => serviceChargeRate.parse(input);
 export const toCoverCharge = (input: number): CoverCharge => coverCharge.parse(input);
 export const toIntroductionTitle = (input: string): IntroductionTitle => introductionTitle.parse(input);
-export const toIntroductionDetail = (input: string): IntroductionDetail => introductionDetail.parse(input);
+export const toIntroductionContent = (input: string): IntroductionContent => introductionContent.parse(input);
 
-type RestaurantId = z.infer<typeof restaurantId>;
+export type RestaurantId = z.infer<typeof restaurantId>;
 type Name = z.infer<typeof name>;
 type PhoneNumber = z.infer<typeof phoneNumber>;
 type Address = z.infer<typeof address>;
@@ -65,14 +65,15 @@ type ClosedDay = z.infer<typeof closedDay>;
 type ServiceChargeRate = z.infer<typeof serviceChargeRate>;
 type CoverCharge = z.infer<typeof coverCharge>;
 type IntroductionTitle = z.infer<typeof introductionTitle>;
-type IntroductionDetail = z.infer<typeof introductionDetail>;
+type IntroductionContent = z.infer<typeof introductionContent>;
 type Restaurant = z.infer<typeof restaurant>;
 
-type NewRestaurant = z.infer<typeof newRestaurant>;
+export type NewRestaurant = z.infer<typeof newRestaurant>;
+export type NewRestaurantInput = z.input<typeof newRestaurant>;
 export type CreatedRestaurant = z.infer<typeof createdRestaurant>;
-export type CreateRestaurantInput = z.input<typeof newRestaurant>;
+export type CreatedRestaurantInput = z.input<typeof createdRestaurant>;
 
-export const toNewRestaurant = (input: CreateRestaurantInput): NewRestaurant => {
+export const toNewRestaurant = (input: NewRestaurantInput): NewRestaurant => {
 	return newRestaurant.parse({
 		name: toRestaurantName(input.name),
 		phoneNumber: toPhoneNumber(input.phoneNumber),
@@ -84,7 +85,24 @@ export const toNewRestaurant = (input: CreateRestaurantInput): NewRestaurant => 
 		serviceChargeRate: toServiceChargeRate(input.serviceChargeRate),
 		coverCharge: toCoverCharge(input.coverCharge),
 		introductionTitle: toIntroductionTitle(input.introductionTitle),
-		introductionDetail: toIntroductionDetail(input.introductionDetail),
+		introductionContent: toIntroductionContent(input.introductionContent),
+	});
+};
+
+export const toCreatedRestaurant = (input: CreatedRestaurantInput): CreatedRestaurant => {
+	return createdRestaurant.parse({
+		id: toRestaurantId(input.id),
+		name: toRestaurantName(input.name),
+		phoneNumber: toPhoneNumber(input.phoneNumber),
+		address: toAddress(input.address),
+		building: toBuilding(input.building),
+		nearestStation: toNearestStation(input.nearestStation),
+		access: toAccess(input.access),
+		closedDay: toClosedDay(input.closedDay),
+		serviceChargeRate: toServiceChargeRate(input.serviceChargeRate),
+		coverCharge: toCoverCharge(input.coverCharge),
+		introductionTitle: toIntroductionTitle(input.introductionTitle),
+		introductionContent: toIntroductionContent(input.introductionContent),
 	});
 };
 
@@ -101,7 +119,7 @@ export const createRestaurant = (input: NewRestaurant): CreatedRestaurant => {
 		serviceChargeRate: input.serviceChargeRate,
 		coverCharge: input.coverCharge,
 		introductionTitle: input.introductionTitle,
-		introductionDetail: input.introductionDetail,
+		introductionContent: input.introductionContent,
 	});
 };
 
@@ -164,10 +182,10 @@ export const updateIntroductionTitle = (
 	introductionTitle,
 });
 
-export const updateIntroductionDetail = (
+export const updateIntroductionContent = (
 	restaurant: CreatedRestaurant,
-	introductionDetail: IntroductionDetail,
+	introductionContent: IntroductionContent,
 ): CreatedRestaurant => ({
 	...restaurant,
-	introductionDetail,
+	introductionContent,
 });

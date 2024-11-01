@@ -1,7 +1,11 @@
 {
 	"name": "coreApi",
 	"scripts": {
-		"dev": "tsx watch src/index.ts"
+		"dev": "tsx watch src/index.ts",
+		"migrate": "prisma migrate dev",
+		"generate": "prisma generate",
+		"test": "vitest",
+		"coverage": "vitest run --coverage"
 	},
 	"dependencies": {
 		"@hono/node-server": "^1.13.1",

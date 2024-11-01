@@ -72,6 +72,7 @@ model Restaurant {
   // 店舗紹介関連のカラム
   introductionTitle   String  @map("introduction_title") @db.Char(35) // 長すぎると良くないので35文字制限
   introductionContent String  @map("introduction_content") @db.Char(200)
+  isDeleted           Boolean @default(false) @map("is_deleted")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")

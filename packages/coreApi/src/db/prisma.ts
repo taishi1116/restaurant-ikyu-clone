@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
+import { env } from "hono/adapter";
 
-export const prisma = (databaseUrl: string): PrismaClient =>
+export const getPrismaInstance = (databaseUrl: string): PrismaClient =>
 	new PrismaClient({
 		datasourceUrl: databaseUrl,
 	});
