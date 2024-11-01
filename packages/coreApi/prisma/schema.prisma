@@ -60,8 +60,6 @@ model Employee {
 
 model Restaurant {
   id                  String  @id @db.Uuid
-  paymentId           String  @unique @map("payment_id") @db.Uuid
-  stripeId            String  @unique @map("stripe_id")
   name                String  @unique
   phoneNumber         String  @map("phone_number")
   address             String
@@ -78,13 +76,23 @@ model Restaurant {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  employees                 Employee[]
-  plans                     Plan[]
-  images                    RestaurantImage[]
-  features                  RestaurantFeatures[]
-  restaurantsPaymentMethods RestaurantsPaymentMethods[]
+  employees      Employee[]
+  plans          Plan[]
+  images         RestaurantImage[]
+  features       RestaurantFeatures[]
+  paymentMethods RestaurantsPaymentMethods[]
+  stripe         RestaurantStripe?
 
   @@map("restaurants")
+}
+
+model RestaurantStripe {
+  id           String     @id @db.Uuid
+  restaurantId String     @unique @map("restaurant_id") @db.Uuid
+  stripeId     String     @unique @map("stripe_id")
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@map("restaurants_stripe")
 }
 
 model RestaurantImage {
