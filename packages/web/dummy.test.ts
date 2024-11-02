@@ -1,5 +1,7 @@
+import { describe, expect, test } from "vitest";
+
 describe("jest installの仮テスト", () => {
-	it("", () => {
+	test("", () => {
 		expect(100).toEqual(100);
 	});
 });

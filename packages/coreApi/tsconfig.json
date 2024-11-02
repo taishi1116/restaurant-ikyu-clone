@@ -8,6 +8,7 @@
 		"jsx": "react-jsx",
 		"jsxImportSource": "hono/jsx",
 		"rootDir": "src",
+		"baseUrl": "./",
 		"paths": {
 			"@*": ["*"]
 		}
