@@ -1,23 +1,18 @@
 import { z } from "@hono/zod-openapi";
 import { generateId } from "@src/utils/generateId";
 
-export const restaurantId = z.string().uuid().brand("RestaurantId");
-const name = z.string().brand("RestaurantName");
-const phoneNumber = z.string().brand("PhoneNumber");
-const address = z.string().brand("Address");
-const building = z.string().optional().brand("Building");
-const nearestStation = z.string().optional().brand("NearestStation");
-const access = z.string().brand("Access");
+export const restaurantId = z.string().uuid().brand("RestaurantId").describe("店舗ID");
+const name = z.string().brand("RestaurantName").describe("店舗名");
+const phoneNumber = z.string().brand("PhoneNumber").describe("電話番号");
+const address = z.string().brand("Address").describe("住所");
+const building = z.string().optional().brand("Building").describe("建物名");
+const nearestStation = z.string().optional().brand("NearestStation").brand("最寄り駅");
+const access = z.string().brand("Access").describe("アクセス");
 const closedDay = z.string().brand("ClosedDay").describe("土曜日・日曜日などのフリーテキスト入力の仕様なのでstring");
-const serviceChargeRate = z
-	.number()
-	.nonnegative()
-	.max(100)
-	.brand("ServiceChargeRate")
-	.describe("サービス料金(%)なので0以上100以下");
-const coverCharge = z.number().nonnegative().brand("CoverCharge");
-const introductionTitle = z.string().max(35).brand("IntroductionTitle");
-const introductionContent = z.string().max(200).brand("IntroductionDetail");
+const serviceChargeRate = z.number().nonnegative().max(100).brand("ServiceChargeRate").describe("サービス料金(%)");
+const coverCharge = z.number().nonnegative().brand("CoverCharge").describe("チャージ料金");
+const introductionTitle = z.string().max(35).brand("IntroductionTitle").describe("店舗紹介タイトル");
+const introductionContent = z.string().max(200).brand("IntroductionDetail").describe("店舗紹介詳細");
 
 const restaurant = z
 	.object({

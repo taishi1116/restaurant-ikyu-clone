@@ -14,6 +14,7 @@ import {
 	findRestaurantById,
 	updateRestaurant as updateRestaurantToDB,
 } from "@src/restaurant/restaurantRepository";
+import { errorResponse } from "@src/utils/errorResponse";
 import { env } from "hono/adapter";
 
 const createRoute = honoRoute({
@@ -32,10 +33,18 @@ const createRoute = honoRoute({
 	},
 	responses: {
 		201: {
-			description: "登録完了",
+			description: "created",
 			content: {
 				"application/json": {
 					schema: createdRestaurant,
+				},
+			},
+		},
+		400: {
+			description: "bad request",
+			content: {
+				"application/json": {
+					schema: errorResponse,
 				},
 			},
 		},
@@ -58,10 +67,18 @@ const updateRoute = honoRoute({
 	},
 	responses: {
 		200: {
-			description: "更新完了",
+			description: "ok",
 			content: {
 				"application/json": {
 					schema: createdRestaurant,
+				},
+			},
+		},
+		400: {
+			description: "bad request",
+			content: {
+				"application/json": {
+					schema: errorResponse,
 				},
 			},
 		},
@@ -83,6 +100,14 @@ const findOneRoute = honoRoute({
 			content: {
 				"application/json": {
 					schema: createdRestaurant,
+				},
+			},
+		},
+		404: {
+			description: "not found",
+			content: {
+				"application/json": {
+					schema: errorResponse,
 				},
 			},
 		},
