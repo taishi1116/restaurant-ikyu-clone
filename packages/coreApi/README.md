@@ -6,11 +6,17 @@
 ```
 npm install
 npm run dev
-```
-
-```
 open http://localhost:3000
 ```
+
+## APIドキュメント
+
+ローカル環境を立ち上げている場合は以下のURLでAPIドキュメントにアクセスできます。
+
+```
+http://localhost:3000/reference
+```
+
 
 ## 外部サービス 
 
