@@ -1,7 +1,7 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+篠田の個人的な学習目的でRailsでAPIを作るパッケージです  
+もしRailsを触りたい人がいればいじってもらって大丈夫です。
 
 Things you may want to cover:
 
